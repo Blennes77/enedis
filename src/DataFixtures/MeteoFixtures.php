@@ -38,7 +38,7 @@ class MeteoFixtures extends Fixture
                 }
 
                 // On se positionne sur l'incrément suivant
-                $jourUnix = $jourUnix + 361 ;
+                $jourUnix = $jourUnix + 360 ;
             }
 
         }
