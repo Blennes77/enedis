@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Dashboard</h1>
+<p> {{ commande }}</p>
+<div id="div_piechart"></div>
+<div id="div_histogram"></div>
+<form action="" method="POST">
+    <div id="div_linechart"></div>
+    <input type="submit" name="previous" value="<<" />
+    <input type="submit" name="after" value=">>" />
+</form>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    {{ gc_draw([piechart, histogram], ['div_piechart', 'div_histogram']) }}
+    {{ gc_draw([linechart], ['div_linechart']) }}
+</script>
+{% endblock %}
