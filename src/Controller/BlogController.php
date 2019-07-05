@@ -8,6 +8,7 @@ use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Histogram;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart;
 use \DateTime;
+use App\Entity\Consommation;
 
 class BlogController extends AbstractController
 {
@@ -38,16 +39,29 @@ class BlogController extends AbstractController
     public function dashboard()
     {
         if (isset($_POST['previous'])) {
-            //action for update here
+            //action for previous
             $commande = "Previous";
+            $jourUnixMax = $_POST['dateMax'];
+            $jourUnixMin = $_POST['dateMin'];
+            $jourUnixMax = $jourUnixMax - ( 7 * 86400);
+            $jourUnixMin = $jourUnixMin - ( 7 * 86400);
         } else if (isset($_POST['after'])) {
-            //action for delete
+            //action for after
             $commande = "After";
+            $jourUnixMax = $_POST['dateMax'];
+            $jourUnixMin = $_POST['dateMin'];
+            $jourUnixMax = $jourUnixMax + ( 7 * 86400);
+            $jourUnixMin = $jourUnixMin + ( 7 * 86400);
         } else {
-            //invalid action!
-            $commande = "None";
+            // Premier affichage du dashboard
+            // Nous sommes le (pour le dev, nous sommes le 1 mai 2019)
+            $jourUnixMax = 1556668800;
+            $jourUnixMin = $jourUnixMax - ( 7 * 86400 );
+            $commande = "$jourUnixMax : $jourUnixMin";
         }
 
+        $consommation = $this->getDoctrine()->getRepository(Consommation::class)->findByDateRange($jourUnixMin, $jourUnixMax);
+/*
         $pieChart = new PieChart();
         $pieChart->getData()->setArrayToDataTable(
             [
@@ -64,7 +78,8 @@ class BlogController extends AbstractController
         $pieChart->getOptions()->setHeight(500);
         $pieChart->getOptions()->setWidth(900);
         $pieChart->getOptions()->getLegend()->setPosition('none');
-
+*/
+/*
         $histogram = new Histogram();
         $histogram->getData()->setArrayToDataTable([
             ['Population'],
@@ -86,7 +101,7 @@ class BlogController extends AbstractController
         $histogram->getOptions()->setColors(['#e7711c']);
         $histogram->getOptions()->getHistogram()->setLastBucketPercentile(10);
         $histogram->getOptions()->getHistogram()->setBucketSize(10000000);
-
+*/
         $lineChart = new LineChart();
         $lineChart->getData()->setArrayToDataTable([
             ['Month', 'Average Temperature', 'Average Hours of Daylight'],
@@ -114,8 +129,10 @@ class BlogController extends AbstractController
 
         return $this->render('/blog/dashboard.html.twig', [
             'commande' => $commande,
-            'piechart' => $pieChart,
-            'histogram' => $histogram,
+            'dateMin' => $jourUnixMin,
+            'dateMax' => $jourUnixMax,
+//            'piechart' => $pieChart,
+//            'histogram' => $histogram,
             'linechart' => $lineChart
         ]);
     }

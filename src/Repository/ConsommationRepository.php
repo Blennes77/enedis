@@ -19,6 +19,23 @@ class ConsommationRepository extends ServiceEntityRepository
         parent::__construct($registry, Consommation::class);
     }
 
+    /**
+     * @return Consommation[] Returns an array of Consommation objects between dateInf and dateSup
+     */
+    public function findByDateRange($dateInf, $dateSup)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.createdAt >= :dateInf')
+            ->andWhere('c.createdAt <= :dateSup')
+            ->setParameter('dateInf', $dateInf)
+            ->setParameter('dateSup', $dateSup)
+            ->orderBy('c.id', 'ASC')
+        //    ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
     // /**
     //  * @return Consommation[] Returns an array of Consommation objects
     //  */
