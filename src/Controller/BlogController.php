@@ -56,54 +56,15 @@ class BlogController extends AbstractController
             // Premier affichage du dashboard
             // Nous sommes le (pour le dev, nous sommes le 1 mai 2019)
             $jourUnixMax = 1556668800;
+            //$jourUnixMax = strtotime('2019-05-1 00:00:00');
             $jourUnixMin = $jourUnixMax - ( 7 * 86400 );
             $commande = "$jourUnixMax : $jourUnixMin";
         }
 
         $consommation = $this->getDoctrine()->getRepository(Consommation::class)->findByDateRange($jourUnixMin, $jourUnixMax);
-/*
-        $pieChart = new PieChart();
-        $pieChart->getData()->setArrayToDataTable(
-            [
-                ['Language', 'Speakers (in millions)'],
-                ['German',  5.85],
-                ['French',  1.66],
-                ['Italian', 0.316],
-                ['Romansh', 0.0791]
-            ]
-        );
-        $pieChart->getOptions()->setPieSliceText('label');
-        $pieChart->getOptions()->setTitle('Swiss Language Use (100 degree rotation)');
-        $pieChart->getOptions()->setPieStartAngle(100);
-        $pieChart->getOptions()->setHeight(500);
-        $pieChart->getOptions()->setWidth(900);
-        $pieChart->getOptions()->getLegend()->setPosition('none');
-*/
-/*
-        $histogram = new Histogram();
-        $histogram->getData()->setArrayToDataTable([
-            ['Population'],
-            [12000000],
-            [13000000],
-            [100000000],
-            [1000000000],
-            [25000000],
-            [600000],
-            [6000000],
-            [65000000],
-            [210000000],
-            [80000000],
-        ]);
-        $histogram->getOptions()->setTitle('Country Populations');
-        $histogram->getOptions()->setWidth(900);
-        $histogram->getOptions()->setHeight(500);
-        $histogram->getOptions()->getLegend()->setPosition('none');
-        $histogram->getOptions()->setColors(['#e7711c']);
-        $histogram->getOptions()->getHistogram()->setLastBucketPercentile(10);
-        $histogram->getOptions()->getHistogram()->setBucketSize(10000000);
-*/
+
         $lineChart = new LineChart();
-        $lineChart->getData()->setArrayToDataTable([
+/*        $lineChart->getData()->setArrayToDataTable([
             ['Month', 'Average Temperature', 'Average Hours of Daylight'],
             [new DateTime('2014-01'),  -.5,  5.7],
             [new DateTime('2014-02'),   .4,  8.7],
@@ -118,6 +79,17 @@ class BlogController extends AbstractController
             [new DateTime('2014-11'), 1.1,  6.6],
             [new DateTime('2014-12'), -.2,  4.5]
         ]);
+*/        
+        $head[] = ['Month', 'Average Temperature', 'Average Hours of Daylight'];
+        foreach($consommation as $conso){
+            $head[] = [ $conso['createdAt'], $conso['kw'], $conso['kwh'] ];
+        }
+        //$head[] = $consommation;
+        //$graph[] = array_merge($head, $consommation);
+        print_r($head);
+        $lineChart->getData()->setArrayToDataTable(
+            $head
+        );
 
         $lineChart->getOptions()->getChart()
             ->setTitle('Average Temperatures and Daylight in Iceland Throughout the Year');

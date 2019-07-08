@@ -24,16 +24,28 @@ class ConsommationRepository extends ServiceEntityRepository
      */
     public function findByDateRange($dateInf, $dateSup)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.createdAt >= :dateInf')
-            ->andWhere('c.createdAt <= :dateSup')
-            ->setParameter('dateInf', $dateInf)
-            ->setParameter('dateSup', $dateSup)
-            ->orderBy('c.id', 'ASC')
-        //    ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT c.createdAt, c.kw, c.kwh
+            FROM App\Entity\Consommation c
+            WHERE c.createdAt >= :dateInf
+            AND c.createdAt <= :dateSup
+            ORDER BY c.createdAt ASC'
+        )->setParameter('dateInf', date('Y-m-d H:i:s', $dateInf))->setParameter('dateSup', date('Y-m-d H:i:s', $dateSup));
+
+        return $query->execute();
+
+        //return $this->createQueryBuilder('c')
+        //    ->andWhere('c.createdAt >= :dateInf')
+        //    ->andWhere('c.createdAt <= :dateSup')
+        //    ->setParameter('dateInf', $dateInf)
+        //    ->setParameter('dateSup', $dateSup)
+        //    ->orderBy('c.id', 'ASC')
+        ////    ->setMaxResults(10)
+        //    ->getQuery()
+        //    ->getResult()
+        //;
     }
     
     // /**
