@@ -54,8 +54,8 @@ class BlogController extends AbstractController
             $jourUnixMin = $jourUnixMin + ( 7 * 86400);
         } else {
             // Premier affichage du dashboard
-            // Nous sommes le (pour le dev, nous sommes le 1 mai 2019)
-            $jourUnixMax = 1556668800;
+            // Nous sommes le (pour le dev, nous sommes le 8 mai 2019)
+            $jourUnixMax = 1556668800 + ( 7 * 86400);
             //$jourUnixMax = strtotime('2019-05-1 00:00:00');
             $jourUnixMin = $jourUnixMax - ( 7 * 86400 );
             $commande = "$jourUnixMax : $jourUnixMin";
@@ -63,41 +63,23 @@ class BlogController extends AbstractController
 
         $consommation = $this->getDoctrine()->getRepository(Consommation::class)->findByDateRange($jourUnixMin, $jourUnixMax);
 
-        $lineChart = new LineChart();
-/*        $lineChart->getData()->setArrayToDataTable([
-            ['Month', 'Average Temperature', 'Average Hours of Daylight'],
-            [new DateTime('2014-01'),  -.5,  5.7],
-            [new DateTime('2014-02'),   .4,  8.7],
-            [new DateTime('2014-03'),   .5,   12],
-            [new DateTime('2014-04'),  2.9, 15.3],
-            [new DateTime('2014-05'),  6.3, 18.6],
-            [new DateTime('2014-06'),    9, 20.9],
-            [new DateTime('2014-07'), 10.6, 19.8],
-            [new DateTime('2014-08'), 10.3, 16.6],
-            [new DateTime('2014-09'),  7.4, 13.3],
-            [new DateTime('2014-10'),  4.4,  9.9],
-            [new DateTime('2014-11'), 1.1,  6.6],
-            [new DateTime('2014-12'), -.2,  4.5]
-        ]);
-*/        
-        $head[] = ['Month', 'Average Temperature', 'Average Hours of Daylight'];
+        $head[] = ['Month', 'Consommation moyenne en Kw', 'Température moyenne extérieure'];
         foreach($consommation as $conso){
             $head[] = [ $conso['createdAt'], $conso['kw'], $conso['kwh'] ];
         }
-        //$head[] = $consommation;
-        //$graph[] = array_merge($head, $consommation);
-        print_r($head);
+
+        //print_r($head);
+        $lineChart = new LineChart();
         $lineChart->getData()->setArrayToDataTable(
             $head
         );
-
         $lineChart->getOptions()->getChart()
-            ->setTitle('Average Temperatures and Daylight in Iceland Throughout the Year');
+            ->setTitle('Consommation électrique hebdomadaire - Température extérieur');
         $lineChart->getOptions()
-            ->setHeight(400)
-            ->setWidth(900)
-            ->setSeries([['axis' => 'Temps'], ['axis' => 'Daylight']])
-            ->setAxes(['y' => ['Temps' => ['label' => 'Temps (Celsius)'], 'Daylight' => ['label' => 'Daylight']]]);
+            ->setHeight(600)
+            ->setWidth(1800)
+            ->setSeries([['axis' => 'Kw'], ['axis' => 'Temps']])
+            ->setAxes(['y' => ['Kw' => ['label' => 'Consommation (Kw)'], 'Temps' => ['label' => 'Température (°C)']]]);
 
         return $this->render('/blog/dashboard.html.twig', [
             'commande' => $commande,
